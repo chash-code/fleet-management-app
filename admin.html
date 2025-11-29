@@ -339,7 +339,7 @@
             localStorage.setItem('fleets', JSON.stringify(fleets));
         }
 
-        //// Form submission
+        /// Form submission
         document.getElementById('fleetForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -456,7 +456,7 @@
             }
         }
 
-        // Filter handlers
+        // Filter handler
         document.getElementById('categoryFilter').addEventListener('change', renderFleets);
         document.getElementById('availabilityFilter').addEventListener('change', renderFleets);
         document.getElementById('clearFilterBtn').addEventListener('click', function() {
