@@ -338,3 +338,136 @@
         function saveFleets() {
             localStorage.setItem('fleets', JSON.stringify(fleets));
         }
+
+        //// Form submission
+        document.getElementById('fleetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const regNo = document.getElementById('regNo').value.trim();
+            const category = document.getElementById('category').value;
+            const driverName = document.getElementById('driverName').value.trim();
+            const availability = document.querySelector('input[name="availability"]:checked').value;
+            
+            // Validation
+            if (!regNo || !category || !driverName) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            if (editingIndex === -1) {
+                // Add new fleet
+                fleets.push({
+                    regNo,
+                    category,
+                    driverName,
+                    availability
+                });
+                alert('Fleet added successfully!');
+            } else {
+                // Update existing fleet
+                fleets[editingIndex] = {
+                    regNo,
+                    category,
+                    driverName,
+                    availability
+                };
+                alert('Fleet updated successfully!');
+                editingIndex = -1;
+                document.querySelector('.add-fleet-btn').textContent = 'Add Fleet';
+            }
+            
+            saveFleets();
+            renderFleets();
+            this.reset();
+        });
+
+        // Render fleet cards
+        function renderFleets() {
+            const grid = document.getElementById('fleetGrid');
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const availabilityFilter = document.getElementById('availabilityFilter').value;
+            
+            let filteredFleets = fleets.filter(fleet => {
+                const categoryMatch = categoryFilter === 'All' || fleet.category === categoryFilter;
+                const availabilityMatch = availabilityFilter === 'All' || fleet.availability === availabilityFilter;
+                return categoryMatch && availabilityMatch;
+            });
+            
+            if (filteredFleets.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Fleet Vehicles Found</h3>
+                        <p>Try adjusting your filters or add a new vehicle</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredFleets.map((fleet, index) => {
+                const actualIndex = fleets.indexOf(fleet);
+                return `
+                    <div class="fleet-card">
+                        <div class="vehicle-icon">
+                            <img src="${vehicleImages[fleet.category]}" alt="${fleet.category}">
+                        </div>
+                        <div class="fleet-info">
+                            <p><strong>Reg No:</strong> ${fleet.regNo}</p>
+                            <p><strong>Category:</strong> ${fleet.category}</p>
+                            <p><strong>Driver:</strong> ${fleet.driverName}</p>
+                            <p><strong>Status:</strong> <span class="status-badge status-${fleet.availability.toLowerCase()}">${fleet.availability}</span></p>
+                        </div>
+                        <div class="card-actions">
+                            <button class="update-btn" onclick="updateDriver(${actualIndex})">Update Driver</button>
+                            <button class="availability-btn" onclick="toggleAvailability(${actualIndex})">Change Availability</button>
+                            <button class="delete-btn" onclick="deleteFleet(${actualIndex})">Delete Vehicle</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update driver
+        function updateDriver(index) {
+            const newDriverName = prompt('Enter new driver name:');
+            if (newDriverName && newDriverName.trim()) {
+                fleets[index].driverName = newDriverName.trim();
+                saveFleets();
+                renderFleets();
+                alert('Driver updated successfully!');
+            } else if (newDriverName !== null) {
+                alert('Driver name cannot be empty');
+            }
+        }
+
+        // Toggle availability 
+        function toggleAvailability(index) {
+            fleets[index].availability = fleets[index].availability === 'Available' ? 'Unavailable' : 'Available';
+            saveFleets();
+            renderFleets();
+        }
+
+        // Delete fleet
+        function deleteFleet(index) {
+            if (confirm('Are you sure you want to delete this vehicle? This action cannot be undone.')) {
+                fleets.splice(index, 1);
+                saveFleets();
+                renderFleets();
+                alert('Vehicle deleted successfully!');
+            }
+        }
+
+        // Filter handlers
+        document.getElementById('categoryFilter').addEventListener('change', renderFleets);
+        document.getElementById('availabilityFilter').addEventListener('change', renderFleets);
+        document.getElementById('clearFilterBtn').addEventListener('click', function() {
+            document.getElementById('categoryFilter').value = 'All';
+            document.getElementById('availabilityFilter').value = 'All';
+            renderFleets();
+        });
+
+        // Initialize
+        loadFleets();
+    </script>
+</body>
+</html>
+
