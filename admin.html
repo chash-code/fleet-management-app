@@ -267,7 +267,7 @@
     </div>
 
     <div class="container">
-        <!-- Sidebar - Fleet Form -->
+        <!-- Sidebar - Fleet Form --->
         <div class="sidebar">
             <h2>Add Fleet</h2>
             <form id="fleetForm">
@@ -300,4 +300,41 @@
                 </div>
                 <button type="submit" class="add-fleet-btn">Add Fleet</button>
             </form>
+        </div> 
+
+         <!-- Main Content - Fleet Cards -->
+        <div class="main-content">
+            <div class="fleet-grid" id="fleetGrid">
+                <div class="empty-state">
+                    <h3>No Fleet Vehicles Yet</h3>
+                    <p>Add your first vehicle using the form on the left</p>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <script>
+        let fleets = [];
+        let editingIndex = -1;
+
+        // Vehicle imagess
+        const vehicleImages = {
+            'Auto': 'https://coding-platform.s3.amazonaws.com/dev/lms/tickets/5e80fcb6-3f8e-480c-945b-30a5359eb40e/JNmYjkVr3WOjsrbu.png',
+            'Car': 'https://coding-platform.s3.amazonaws.com/dev/lms/tickets/5e80fcb6-3f8e-480c-945b-30a5359eb40e/JNmYjkVr3WOjsrbu.png',
+            'Truck': 'https://coding-platform.s3.amazonaws.com/dev/lms/tickets/5e80fcb6-3f8e-480c-945b-30a5359eb40e/JNmYjkVr3WOjsrbu.png',
+            'Bus': 'https://coding-platform.s3.amazonaws.com/dev/lms/tickets/5e80fcb6-3f8e-480c-945b-30a5359eb40e/JNmYjkVr3WOjsrbu.png'
+        };
+
+        // Load fleets from localStorage
+        function loadFleets() {
+            const saved = localStorage.getItem('fleets');
+            if (saved) {
+                fleets = JSON.parse(saved);
+                renderFleets();
+            }
+        }
+
+        // Save fleets to localStorage
+        function saveFleets() {
+            localStorage.setItem('fleets', JSON.stringify(fleets));
+        }
